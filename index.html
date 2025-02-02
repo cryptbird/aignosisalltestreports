@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Report</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 7.5in;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+        }
+
+        .section {
+            page-break-before: always;
+            padding: 20px;
+            border-bottom: 2px solid #000;
+        }
+
+        .section h2 {
+            text-align: center;
+            color: #007bff;
+        }
+
+        .data-field {
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .label {
+            font-weight: bold;
+        }
+
+        #printBtn {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #printBtn:hover {
+            background-color: #0056b3;
+        }
+
+        .chart-container {
+            margin: 20px auto;
+            max-width: 600px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1 style="text-align: center;">Patient Assessment Report</h1>
+
+        <div class="section">
+            <h2>Patient Information</h2>
+            <div id="patient-info"></div>
+        </div>
+
+        <div class="section">
+            <h2>INCLEN Assessment</h2>
+            <div id="inclen-result"></div>
+        </div>
+
+        <div class="section">
+            <h2>ISAA Assessment</h2>
+            <div id="isaa-result"></div>
+            <canvas id="isaaChart"></canvas>
+        </div>
+
+        <div class="section">
+            <h2>CARS Assessment</h2>
+            <div id="cars-result"></div>
+            <canvas id="carsChart"></canvas>
+        </div>
+
+        <div class="section">
+            <h2>MCHAT Assessment</h2>
+            <div id="mchat-result"></div>
+        </div>
+
+        <button id="printBtn">Download PDF</button>
+    </div>
+
+    <script>
+        function getQueryParams() {
+            const params = new URLSearchParams(window.location.search);
+            let queryParams = {};
+            params.forEach((value, key) => {
+                queryParams[key] = value;
+            });
+            return queryParams;
+        }
+
+        function calculateScores(params) {
+            let INCLEN = params.INCLEN === "Positive" ? "Likely Autism" : "Negative";
+            let ISAA_Score = parseInt(params.TOT_ISAA) || 0;
+            let CARS_Score = parseFloat(params.TOT_CARS) || 0;
+            let MCHAT = params.MCHAT === "Positive" ? "High Risk" : "Low Risk";
+
+            let isAutistic = (INCLEN === "Likely Autism" || ISAA_Score > 70 || CARS_Score > 30 || MCHAT === "High Risk")
+                ? "Autistic Traits Detected"
+                : "No Significant Autism Traits";
+
+            return { INCLEN, ISAA_Score, CARS_Score, MCHAT, isAutistic };
+        }
+
+        function displayData(params, scores) {
+            let patientInfoHTML = `
+                <p><span class="label">Name:</span> ${params.Name || "N/A"}</p>
+                <p><span class="label">Patient ID:</span> ${params.Patient_ID || "N/A"}</p>
+                <p><span class="label">Age:</span> ${params.Age || "N/A"}</p>
+                <p><span class="label">Sex:</span> ${params.Sex || "N/A"}</p>
+                <p><span class="label">Place of Administration:</span> ${params.Place_of_Administration || "N/A"}</p>
+                <p><span class="label">Assessor:</span> ${params.Assessor || "N/A"}</p>
+                <p><span class="label">Diagnosis:</span> ${params.Provisional_Diagnosis || "N/A"}</p>
+                <p><span class="label">Final Interpretation:</span> ${scores.isAutistic}</p>
+            `;
+            document.getElementById("patient-info").innerHTML = patientInfoHTML;
+
+            document.getElementById("inclen-result").innerHTML = `<p><span class="label">INCLEN:</span> ${scores.INCLEN}</p>`;
+            document.getElementById("isaa-result").innerHTML = `<p><span class="label">ISAA Score:</span> ${scores.ISAA_Score}</p>`;
+            document.getElementById("cars-result").innerHTML = `<p><span class="label">CARS Score:</span> ${scores.CARS_Score}</p>`;
+            document.getElementById("mchat-result").innerHTML = `<p><span class="label">MCHAT:</span> ${scores.MCHAT}</p>`;
+
+            generateChart("isaaChart", ["ISAA Score"], [scores.ISAA_Score]);
+            generateChart("carsChart", ["CARS Score"], [scores.CARS_Score]);
+        }
+
+        function generateChart(canvasId, labels, data) {
+            new Chart(document.getElementById(canvasId), {
+                type: "bar",
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: "Scores",
+                        data: data,
+                        backgroundColor: ["rgba(75, 192, 192, 0.2)"],
+                        borderColor: ["rgba(75, 192, 192, 1)"],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        document.getElementById("printBtn").addEventListener("click", () => {
+            const reportElement = document.querySelector(".container");
+            html2pdf(reportElement);
+        });
+
+        let queryParams = getQueryParams();
+        let scores = calculateScores(queryParams);
+        displayData(queryParams, scores);
+    </script>
+</body>
+
+</html>
