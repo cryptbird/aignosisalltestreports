@@ -7,6 +7,8 @@
     <title>Patient Data</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -114,7 +116,23 @@
             page-break-inside: avoid;
             /* Avoid cutting content in between */
         }
+        /* Prevent table rows from breaking across pages */
+table {
+    page-break-inside: 60px;
+    width: 100%;
+    border-collapse: collapse;
+}
 
+tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
+}
+
+td, th {
+    padding: 8px;
+    border: 1px solid #ccc;
+    word-wrap: break-word;
+}
         .pagebreak {
             page-break-before: always;
             /* Force a new page */
@@ -208,18 +226,41 @@
             <br />
 
             <center>
+                <center>
+                    <table border="2" style="width: 50%; text-align: center; margin-top: 20px; border-collapse: collapse;">
+                        <tr>
+                            <th style="padding: 10px; background-color: #94059f; color: white;">Field</th>
+                            <th style="padding: 10px; background-color: #94059f; color: white;">Value</th>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px; border: 1px solid #ccc;">Name</td>
+                            <td style="padding: 8px; border: 1px solid #ccc;" id="isaapatientNamecell">_</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px; border: 1px solid #ccc;">ISAA Score</td>
+                            <td style="padding: 8px; border: 1px solid #ccc;" id="ISAAScorecell">_</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px; border: 1px solid #ccc;">Classification</td>
+                            <td style="padding: 8px; border: 1px solid #ccc;" id="ISAAinterpretation">_</td>
+                        </tr>
+                    </table>
+                </center>
+
                 <div class="container" id="contentToPrint">
                     <!-- <h1>Patient Information</h1> -->
                     <div id="patientData" hidden>
                         <!-- Data will be displayed here -->
                     </div>
-
+                    
                     <div id="chartContainer">
                         <!-- <h2>Percentage Chart</h2> -->
                         <canvas id="barChart"></canvas>
+                        <br><br><br><br><br><br><br>
+                        <div id="queryparametersisaa"></div>
                     </div>
                 </div>
-
+                
                 <table border="4" style="width: 50%; text-align: center; margin-top: 20px;">
                     <tr>
                         <th>Score Range</th>
@@ -262,7 +303,76 @@
                 const urlParams = new URLSearchParams(window.location.search);
                 return urlParams.get(name);
             }
+             // List of M-CHAT questions
+        const ISAAQuestions = [
+            [
+            "Has poor eye contact",
+    "Lacks social smile",
+    "Remains aloof",
+    "Does not reach out to others",
+    "Unable to relate to people",
+    "Unable to respond to social/ environmental cues",
+    "Engages in solitary and repetitive play activities",
+    "Unable to take turns in social interaction",
+    "Does not maintain peer relationships"],[
+    "Shows inappropriate emotional response",
+    "Shows exaggerated emotions",
+    "Engages in self-stimulating emotions",
+    "Lacks fear of danger",
+    "Excited or agitated for no apparent reason"],[
+    "Acquired speech and lost it",
+    "Has difficulty in using non-verbal language or gestures to communicate",
+    "Engages in stereotyped and repetitive use of language",
+    "Engages in echolalic speech",
+    "Produces infantile squeals/ unusual noises",
+    "Unable to initiate or sustain conversation with others",
+    "Uses jargon or meaningless words",
+    "Uses pronoun reversals",
+    "Unable to grasp pragmatics of communication (real meaning)"],[
+    "Engages in stereotyped and repetitive motor mannerisms",
+    "Shows attachment to inanimate objects",
+    "Shows hyperactivity/ restlessness",
+    "Exhibits aggressive behavior",
+    "Throws temper tantrums",
+    "Engages in self-injurious behavior",
+    "Insists on sameness"],[
+    "Unusually sensitive to sensory stimuli",
+    "Stares into space for long periods of time",
+    "Has difficulty in tracking objects",
+    "Has unusual vision",
+    "Insensitive to pain",
+    "Responds to objects/people unusually by smelling, touching or tasting"],[
+    "Inconsistent attention and concentration",
+    "Shows delay in responding",
+    "Has unusual memory of some kind",
+    "Has 'savant' ability"]
+        ];
 
+        // Function to display M-CHAT responses
+        function displayISAAResponses() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const queryContainer = document.getElementById("queryparametersisaa");
+
+            let ISAATable = `<table border="2" style="width: 100%; text-align: left; border-collapse: collapse;">
+        <tr>
+            <th style="padding: 10px; background-color: #94059f; color: white;">Question</th>
+            <th style="padding: 10px; background-color: #94059f; color: white;">Response</th>
+        </tr>`;
+            const isaasubques=[9,5,9,7,6,4];
+            for (let i = 1; i <= 6; i++) {
+                for(j=0;j<isaasubques[i-1];j++){
+                let response = urlParams.get(`ISAA_${i.toString()}.${j.toString()}`) || "N/A"; // Fetch response for ISAA_01, ISAA_02, ..., ISAA_15
+                ISAATable += `
+        <tr>
+            <td style="padding: 8px; border: 1px solid #ccc;">${ISAAQuestions[i - 1][j]}</td>
+            <td style="padding: 8px; border: 1px solid #ccc; color: #94059f;">${response}</td>
+        </tr>`;}
+            }
+
+            ISAATable += `</table>`;
+
+            queryContainer.innerHTML = ISAATable;
+        }
             // Function to display the data
             function displayData() {
                 const patientData = {
@@ -389,7 +499,7 @@
 
         </script>
         <!-- -------------------ISAA REPORT CONTENT ENDS------------------- -->
-        <!-- <br><br><br> -->
+        <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 
         <!-- <div class="pagebreak"></div> -->
         <!-- -------------------mchat REPORT CONTENT STARTS ----------------- -->
@@ -635,7 +745,7 @@ The CARS score provides a structured analysis of the child's behavior, categoriz
 The results include a severity classification indicator, which helps determine whether a child exhibits typical development, mild signs requiring follow-up, or significant concerns necessitating further evaluation. Early identification through CARS allows for targeted interventions, improving long-term developmental outcomes.
 
 <BR>
-            <span id="CARSscore" style="font-size: 35px; color: #007bff;"></span>
+            Score : <span id="CARSscore" style="font-size: 35px; color: #007bff;"></span>
         </div>
         <span style="
     color: #9b00ab;
@@ -657,7 +767,7 @@ The results include a severity classification indicator, which helps determine w
         </span>
 
         <!-- Patient Information Table -->
-        <!-- <center>
+        <center>
             <table border="2" style="width: 50%; text-align: center; margin-top: 20px; border-collapse: collapse;">
                 <tr>
                     <th style="padding: 10px; background-color: #94059f; color: white;">Field</th>
@@ -672,11 +782,11 @@ The results include a severity classification indicator, which helps determine w
                     <td style="padding: 8px; border: 1px solid #ccc;" id="CARSScorecell">_</td>
                 </tr>
                 <tr>
-                    <td style="padding: 8px; border: 1px solid #ccc;">Chronological Age</td>
-                    <td style="padding: 8px; border: 1px solid #ccc;" id="CARSchronologicalAgecell">_</td>
+                    <td style="padding: 8px; border: 1px solid #ccc;">Classification</td>
+                    <td style="padding: 8px; border: 1px solid #ccc;" id="CARSinterpretation">_</td>
                 </tr>
             </table>
-        </center> -->
+        </center>
         <div class="scorecontent">
             <p>The Aignosis **CARS** (Childhood Autism Rating Scale) test output provides an assessment of the child's behavior patterns based on their responses to key screening questions across various developmental domains.</p> <p> <strong>Lower **CARS** Score:</strong> A lower score indicates that the child’s behaviors align closely with typical developmental milestones, suggesting a minimal likelihood of autism spectrum disorder (ASD). In this case, the child exhibits expected social interaction, communication, and behavioral patterns, indicating that the child’s development is progressing typically. </p> <p> <strong>Higher **CARS** Score:</strong> A higher score suggests that the child’s responses indicate a greater degree of atypical behaviors or developmental delays, which may be associated with autism spectrum disorder. This means that the child may experience challenges in areas such as social communication, emotional response, imitation, and flexibility. A higher score doesn’t confirm a diagnosis of autism but serves as an early indicator that further evaluation by a specialist may be necessary. </p> <p> The **CARS** screening tool is designed to help identify children who may require additional assessment and intervention at an early stage. Early detection and timely intervention can play a crucial role in supporting a child’s developmental needs and improving long-term outcomes. </p>
         </div>
@@ -692,10 +802,14 @@ The results include a severity classification indicator, which helps determine w
                 <div id="patientData" hidden>
                     <!-- Data will be displayed here -->
                 </div>
-
+                <div id="CARSbarchart" style="width: 100%; max-width: 900px; height: 500px; margin: auto;">
+                    <canvas id="CARSChart"></canvas>
+                </div>
+                
                 <div id="chartContainerCARS">
                     <!-- Display query parameters instead of the bar chart -->
                     <!-- <h2>Query Parameters</h2> -->
+
                     <div id="queryParametersCARS"></div>
                 </div>
             </div>
@@ -708,6 +822,86 @@ The results include a severity classification indicator, which helps determine w
     </div>
 </div>
     <script>
+    function createCARSChart() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const CARSQuestions = [
+        "Relating to People", "Imitation", "Emotional Response", "Body Use",
+        "Object Use", "Adaptation to Change", "Visual Response", "Listening Response",
+        "Taste, Smell, and Touch Response and Use", "Fear or Nervousness", "Verbal Communication",
+        "Nonverbal Communication", "Activity Level", "Level and Consistency of Intellectual Response",
+        "General Impressions"
+    ];
+
+    // Extract CARS scores from URL parameters (default to 0)
+    const CARSscores = CARSQuestions.map((_, index) => {
+        return parseFloat(urlParams.get(`CARS_${index + 1}`)) || 0;
+    });
+
+    // Generate unique colors for each bar
+    const barColors = [
+        "#ff5733", "#33ff57", "#5733ff", "#ff33a8", "#33a8ff",
+        "#a8ff33", "#ff8c33", "#33ff8c", "#8c33ff", "#ff338c",
+        "#338cff", "#8cff33", "#ffcc33", "#33ffcc", "#cc33ff"
+    ];
+
+    const ctx = document.getElementById("CARSChart").getContext("2d");
+    new Chart(ctx, {
+        type: "bar",
+        data: {
+            labels: CARSQuestions, // Questions are still X-axis labels
+            datasets: [{
+                label: "CARS Scores",
+                data: CARSscores,
+                backgroundColor: barColors,
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: { enabled: true },
+                datalabels: {
+                    color: "white", // Ensure text is visible inside bars
+                    anchor: "center",
+                    align: "center",
+                    font: { size: 10 },
+                    rotation: -90, // Rotate text vertically inside bars
+                    formatter: (_, context) => {
+                        return CARSQuestions[context.dataIndex]; // Display question instead of value
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 4,
+                    title: {
+                        display: true,
+                        text: "Scores (0 - 4)",
+                        font: { size: 14 }
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: "CARS Questions",
+                        font: { size: 14 }
+                    },
+                    ticks: {
+                        display: false // Hide default X-axis labels
+                    }
+                }
+            }
+        },
+        plugins: [ChartDataLabels] // Enables the data labels plugin
+    });
+}
+
+
+
+
         // Function to format numbers to 1 decimal place
         function formatToOneDecimal(value) {
             return parseFloat(value).toFixed(1);
@@ -770,15 +964,26 @@ The results include a severity classification indicator, which helps determine w
         window.onload = () => {
             handleCARSVisibility();
             displayCARSResponses();
-                        
+            displayISAAResponses();
+            createCARSChart(); // Call the function to generate the bar chart
+
             // Populate the table
             const urlParams = new URLSearchParams(window.location.search);
+            const patientName = urlParams.get("Name") || "N/A";
             const CARSscore = formatToOneDecimal(urlParams.get("TOT_CARS") || 0);
+            const isaascore = formatToOneDecimal(urlParams.get("TOT_ISAA") || 0);
+
             // const formattedClassification = isNaN(classification) ? classification : formatToOneDecimal(classification);
             const currentDate = new Date().toLocaleString();
-            // document.getElementById("CARSScorecell").innerHTML = CARSscore;
+            const carsInterpretation = urlParams.get("carsInterpretation") || 0;
+            const isaaInterpretation = urlParams.get("isaaInterpretation") || 0;
+            document.getElementById("CARSScorecell").innerHTML = CARSscore;
+            document.getElementById("CARSpatientNamecell").innerHTML = patientName;
+            document.getElementById("CARSinterpretation").innerHTML = carsInterpretation;
+            document.getElementById("ISAAinterpretation").innerHTML = isaaInterpretation;
             document.getElementById('pageheadlinedateCARS').innerHTML = currentDate;
             document.getElementById('CARSscore').innerHTML = CARSscore;
+            document.getElementById('ISAAScorecell').innerHTML = isaascore;
             // document.getElementById('classificationmessage').innerHTML = formattedClassification;
 
             handleMChatVisibility();
@@ -787,12 +992,12 @@ The results include a severity classification indicator, which helps determine w
             displayData();
             
             // Extract data from URL
-            const patientName = urlParams.get("Name") || "N/A";
             const mchatScore = urlParams.get("MCHATscore") || "N/A";
             const chronologicalAge = urlParams.get("Age") || "N/A";
             // Populate the table
             console.log(patientName);
             document.getElementById("patientNamecell").innerHTML = patientName;
+            document.getElementById("isaapatientNamecell").innerHTML = patientName;
             document.getElementById("mchatScorecell").innerHTML = mchatScore;
             document.getElementById("chronologicalAgecell").innerHTML = chronologicalAge + " Years";
             const MCHATscore = formatToOneDecimal(urlParams.get("MCHATscore") || 0);
