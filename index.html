@@ -364,10 +364,11 @@
 				.from(element)
 				.save();
 		});
+  
 </script>
 <!-- -------------------ISAA REPORT CONTENT ENDS------------------- -->
 <!-- <br><br><br> -->
- <br>
+ <br> <br><br><br>
 <!-- <div class="pagebreak"></div> -->
 <!-- -------------------mchat REPORT CONTENT STARTS ----------------- -->
 <div id="MCHAT">
@@ -415,6 +416,45 @@
         ">
             Summary of Domain Specific Challenges
         </span>
+        
+        <!-- Patient Information Table -->
+        <center>
+            <table border="2" style="width: 50%; text-align: center; margin-top: 20px; border-collapse: collapse;">
+                <tr>
+                    <th style="padding: 10px; background-color: #94059f; color: white;">Field</th>
+                    <th style="padding: 10px; background-color: #94059f; color: white;">Value</th>
+                </tr>
+                <tr>
+                    <td style="padding: 8px; border: 1px solid #ccc;">Name</td>
+                    <td style="padding: 8px; border: 1px solid #ccc;" id="patientNamecell">_</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px; border: 1px solid #ccc;">MCHAT Score</td>
+                    <td style="padding: 8px; border: 1px solid #ccc;" id="mchatScorecell">_</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px; border: 1px solid #ccc;">Chronological Age</td>
+                    <td style="padding: 8px; border: 1px solid #ccc;" id="chronologicalAgecell">_</td>
+                </tr>
+            </table>
+        </center>
+        <div class="scorecontent">
+            <p>The Aignosis M-CHAT test output provides an assessment of the child's developmental patterns based on their responses to key screening questions.</p>
+            
+            <p>
+                <strong>Lower M-CHAT Score:</strong> A lower score indicates that the child's responses align closely with typical developmental milestones, suggesting a minimal likelihood of autism spectrum disorder (ASD). In this case, the child exhibits expected social communication, interaction, and behavioral patterns. This means that the child's development is progressing in a way that is generally considered neurotypical.
+            </p>
+            
+            <p>
+                <strong>Higher M-CHAT Score:</strong> A higher score suggests that the child's responses indicate a greater number of atypical behaviors or developmental delays, which may be associated with autism spectrum disorder. This means that the child may face challenges in areas such as communication, eye contact, social engagement, and behavioral flexibility. A high score does not confirm a diagnosis of autism but serves as an early indicator that further evaluation by a specialist may be necessary.
+            </p>
+        
+            <p>
+                The M-CHAT screening tool is designed to help identify children who may require additional assessment and intervention at an early stage. Early detection and timely intervention can play a crucial role in supporting a child's developmental needs and improving long-term outcomes.
+            </p>
+        </div>
+        
+        
 
         <!-- <span style="font-family: 'Times New Roman', Times, serif; margin-left: 25px;">
             Lower scores indicate high Challenges
@@ -435,13 +475,7 @@
         </center>
 
 
-    <div class="scorecontent">
-        The Aignosis developmental test output was: <p id='MCHATscore' style="font-size: xx-large; color: #007bff;"></p> 
-        less developmental score - maximally neurotypical score. A score of less developmental challenge is achieved if the most neurotypical response is selected for each relevant question in
-        this domain. <br>
-        high, developmental score = maximally atypical score. A score of high. developmental challenge is achieved if the most atypical response is selected for each relevant question in this
-        domain. <br>
-    </div>	
+    
 
     </div>
 </div>
@@ -450,7 +484,7 @@
     function formatToOneDecimal(value) {
         return parseFloat(value).toFixed(1);
     }
-
+    
     // List of M-CHAT questions
     const mchatQuestions = [
         "Does your child enjoy being swung, bounced on your knee, etc.?",
@@ -529,13 +563,24 @@
 
         // Set test score and classification MCHATscore with 1 decimal formatting
         const urlParams = new URLSearchParams(window.location.search);
+        
+    
+        // Extract data from URL
+        const patientName = urlParams.get("Name") || "N/A";
+        const mchatScore = urlParams.get("MCHATscore") || "N/A";
+        const chronologicalAge = urlParams.get("Age") || "N/A";
+        // Populate the table
+        console.log(patientName);
+        document.getElementById("patientNamecell").innerHTML = patientName;
+        document.getElementById("mchatScorecell").innerHTML = mchatScore;
+        document.getElementById("chronologicalAgecell").innerHTML = chronologicalAge+" Years";
         const MCHATscore = formatToOneDecimal(urlParams.get("MCHATscore") || 0);
         const classification = urlParams.get("dq") || "N/A";
         const formattedClassification = isNaN(classification) ? classification : formatToOneDecimal(classification);
     const currentDate = new Date().toLocaleString();
     document.getElementById('pageheadlinedatemchat').innerHTML = currentDate;
         document.getElementById('MCHATscore').innerHTML = MCHATscore;
-        document.getElementById('classificationmessage').innerHTML = formattedClassification;
+        // document.getElementById('classificationmessage').innerHTML = formattedClassification;
     };
 
     </script>
