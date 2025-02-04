@@ -343,27 +343,7 @@
 	// window.onload = displayData;
 
 	// Add functionality to the Print PDF button
-	document
-		.getElementById("printBtn")
-		.addEventListener("click", function () {
-			const element = document.getElementById("contentToPrint");
-			const options = {
-				margin: [0, 0, 0, 0], // No margins
-				filename: "patient_data.pdf",
-				image: { type: "jpeg", quality: 0.98 },
-				html2canvas: {
-					scale: 2, // Higher scale for better quality
-					width: element.offsetWidth, // Use container width
-				},
-				jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
-			};
-			html2pdf()
-				.set({
-					html2canvas: { scrollX: 0, scrollY: 0 },
-				})
-				.from(element)
-				.save();
-		});
+	
   
 </script>
 <!-- -------------------ISAA REPORT CONTENT ENDS------------------- -->
@@ -582,7 +562,27 @@
         document.getElementById('MCHATscore').innerHTML = MCHATscore;
         // document.getElementById('classificationmessage').innerHTML = formattedClassification;
     };
-
+    document
+		.getElementById("printBtn")
+		.addEventListener("click", function () {
+			const element = document.getElementById("contentToPrint");
+			const options = {
+				margin: [0, 0, 0, 0], // No margins
+				filename: "patient_data.pdf",
+				image: { type: "jpeg", quality: 0.98 },
+				html2canvas: {
+					scale: 2, // Higher scale for better quality
+					width: element.offsetWidth, // Use container width
+				},
+				jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
+			};
+			html2pdf()
+				.set({
+					html2canvas: { scrollX: 0, scrollY: 0 },
+				})
+				.from(element)
+				.save();
+		});
     </script>
 
 
