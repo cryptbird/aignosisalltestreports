@@ -904,7 +904,7 @@ The results include a severity classification indicator, which helps determine w
 
     </div>
     
-</div>
+
     <script>
     function createCARSChart() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -1044,11 +1044,232 @@ The results include a severity classification indicator, which helps determine w
             }
         }
         
-        // Update on page load
-        window.onload = () => {
+        
+
+    </script>
+
+
+    <!-- ---------------- CARS Report Ends ----------------------- -->
+    <br><br>
+    <!-- ---------------- INCLEN Report Starts ----------------------- -->
+
+    <div id="INCLEN">
+        <div style="display: flex; border-bottom: 5px solid #ab29b9;">
+            <div>
+                <div class="pageheadline" style="border-bottom: 0; font-size: small;" id="pageheadlinedateINCLEN"> .
+                </div>
+                <div class="pageheadline" style="display: flex; "> INCLEN Report</div>
+            </div>
+            <div style="margin-left: auto; margin-right: 0; ">
+                <div style=" height: 60px;">
+
+                    <img src="aignosislogo.png" style="max-height:150%; max-width:150%;" alt="">
+
+                </div>
+            </div>
+        </div>
+        <div class="reportheading">
+            <span style="color: #9b00ab">INCLEN </span>Report:
+        </div>
+        <div class="reportcontent">
+
+            The INCLEN (International Clinical Epidemiology Network) tool is a comprehensive screening instrument designed to identify developmental delays and neurodevelopmental disorders, including autism spectrum disorder (ASD), in children. This assessment evaluates key domains such as social interaction, communication, cognitive abilities, motor skills, and behavioral patterns to detect potential developmental concerns at an early stage.  
+            <br>  
+            The INCLEN score provides a structured analysis of the child's responses, categorizing them into different risk levels for developmental disorders. The system generates an overall assessment based on the child's responses to critical questions covering areas such as language development, social engagement, repetitive behaviors, and sensory processing.  
+            <br>  
+            The results include a classification indicator that helps determine whether a child exhibits typical development, mild concerns requiring follow-up, or a significant risk necessitating further evaluation. Early identification through INCLEN enables timely interventions, enhancing developmental outcomes and improving long-term well-being.  
+            <BR>  
+
+
+            <span id="INCLENscore" style="font-size: 35px; color: #007bff;"></span>
+        </div>
+        <span style="
+    color: #9b00ab;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 20px;
+    font-weight: 600;
+    margin-left: 25px;
+    ">
+            Detailed INCLEN Report
+        </span>
+        <br /> <br>
+        <span style="
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 12px;
+    font-weight: 600;
+    margin-left: 25px;
+    ">
+            Summary of Domain Specific Challenges
+        </span>
+        <br>
+        <!-- Patient Information Table -->
+        <center>
+            <table border="2" style="width: 50%; text-align: center; margin-top: 20px; border-collapse: collapse;">
+                <tr>
+                    <th style="padding: 10px; background-color: #94059f; color: white;">Field</th>
+                    <th style="padding: 10px; background-color: #94059f; color: white;">Value</th>
+                </tr>
+                <tr>
+                    <td style="padding: 8px; border: 1px solid #ccc;">Name</td>
+                    <td style="padding: 8px; border: 1px solid #ccc;" id="INCLENpatientNamecell">_</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px; border: 1px solid #ccc;">INCLEN Score</td>
+                    <td style="padding: 8px; border: 1px solid #ccc;" id="INCLENScorecell">_</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px; border: 1px solid #ccc;">Chronological Age</td>
+                    <td style="padding: 8px; border: 1px solid #ccc;" id="INCLENchronologicalAgecell">_</td>
+                </tr>
+            </table>
+        </center>
+         <br>
+        <div class="scorecontent">
+            <p>The INCLEN test output provides an assessment of the child's developmental patterns based on their responses to key screening questions.</p>
+
+<p>
+    <strong>Lower INCLEN Score:</strong> A lower score indicates that the child's responses align closely with typical developmental milestones, suggesting a minimal likelihood of autism spectrum disorder (ASD) or other neurodevelopmental concerns. In this case, the child exhibits expected cognitive, social, and behavioral patterns, indicating typical development.
+</p>
+
+<p>
+    <strong>Higher INCLEN Score:</strong> A higher score suggests that the child's responses indicate potential developmental concerns, including challenges in areas such as communication, social interaction, sensory processing, and cognitive functioning. A high score does not confirm a diagnosis but serves as an early indicator that further clinical evaluation may be necessary.
+</p>
+
+<p>
+    The INCLEN screening tool is designed to help identify children who may require additional assessment and intervention at an early stage. Early detection and timely intervention can play a crucial role in supporting a child's developmental needs and improving long-term outcomes.
+</p>
+
+        </div>
+        <br><br><br>
+
+
+        <!-- <span style="font-family: 'Times New Roman', Times, serif; margin-left: 25px;">
+        Lower scores indicate high Challenges
+    </span> -->
+        <center>
+            <div class="container" id="contentToPrint">
+                <!-- <h1>Patient Information</h1> -->
+                <div id="patientData" hidden>
+                    <!-- Data will be displayed here -->
+                </div>
+
+                <div id="chartContainerINCLEN">
+                    <!-- Display query parameters instead of the bar chart -->
+                    <!-- <h2>Query Parameters</h2> -->
+                    <div id="queryParametersINCLEN"></div>
+                </div>
+            </div>
+        </center>
+
+
+
+        <br> <br><br><br><br> <br>
+    </div>
+</div>
+<script>
+    // Function to format numbers to 1 decimal place
+    function formatToOneDecimal(value) {
+        return parseFloat(value).toFixed(1);
+    }
+
+    // List of INCLEN questions
+    const INCLENQuestions = [
+    "Does your child usually enjoy being taken in the lap or hugged?",
+    "When your child was a baby/toddler, did he/she enjoy being taken in the lap or hugged?",
+    "Does your child usually make eye contact with you or other people?",
+    "Does your child usually use various gestures appropriately during social interactions? (E.g., Namaste, Salaam, waving bye-bye, hello, touching feet, etc.)",
+    "Does your child usually show appropriate facial expressions according to the situation? (E.g., being happy, sad, afraid, etc.)",
+    "Does your child usually look at what you are pointing at?",
+    "Does your child usually bring things to show you or to seek help?",
+    "Does your child usually follow instructions given by others?",
+    "Does your child usually initiate social interactions?",
+    "Does your child respond when his/her name is called?",
+    "Does your child show interest in other children?",
+    "Does your child usually engage in pretend play? (E.g., playing house, pretending to cook, feeding a doll, etc.)",
+    "Does your child usually imitate actions of others?",
+    "Does your child usually respond appropriately to others' emotions?",
+    "Does your child engage in unusual repetitive behaviors? (E.g., hand flapping, rocking, spinning, lining up objects, etc.)",
+    "Does your child insist on following the same routines or rituals?",
+    "Does your child show distress at small changes in routine or surroundings?",
+    "Does your child have unusual attachments to objects?",
+    "Does your child show excessive interest in specific objects or topics?",
+    "Does your child have difficulty shifting attention from one activity to another?",
+    "Does your child react unusually to certain sounds, textures, or lights?",
+    "Does your child exhibit excessive or lack of sensitivity to pain or temperature?",
+    "Does your child have difficulty coordinating movements or performing age-appropriate motor activities?",
+    "Does your child use speech in an unusual way? (E.g., echolalia, repeating phrases, talking in a sing-song voice, etc.)",
+    "Has your child had significant delays in speech or language development?",
+    "Does your child use gestures or pointing instead of spoken language?",
+    "Does your child have difficulty understanding and following instructions?",
+    "Does your child have difficulty initiating or maintaining a conversation?",
+    "Does your child frequently repeat the same phrases or words?",
+    "Does your child avoid looking at people's faces or making eye contact?",
+    "Does your child show difficulty in recognizing social cues (e.g., facial expressions, body language)?",
+    "Does your child display excessive aggression or self-injurious behavior?",
+    "Does your child frequently experience unexplained emotional outbursts or tantrums?",
+    "Does your child exhibit hyperactivity or restlessness?",
+    "Does your child display an unusual level of fear or lack of fear in dangerous situations?",
+    "Does your child show extreme interest in parts of objects rather than the whole object?",
+    "Does your child engage in self-stimulatory behaviors such as hand flapping, spinning, or rocking?",
+    "Does your child have an unusual way of walking or moving?",
+    "Does your child show an unusual attachment to specific topics, objects, or interests?",
+    "Does your child display difficulty in understanding and responding to emotions?",
+    "Does your child show difficulty in adapting to new social situations?"
+];
+
+
+    // Function to display INCLEN responses
+    function displayINCLENResponses() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const queryContainer = document.getElementById("queryParametersINCLEN");
+
+    let INCLENQueryParams = [
+        "INCLEN_A1A1", "INCLEN_A1A2", "INCLEN_A1A3", "INCLEN_A1A4",
+        "INCLEN_A1B1", "INCLEN_A1B2", "INCLEN_A1B3",
+        "INCLEN_A1C1", "INCLEN_A1C2",
+        "INCLEN_A1D1", "INCLEN_A1D2", "INCLEN_A1D3", "INCLEN_A1D4",
+        "INCLEN_A2A", "INCLEN_A2B1", "INCLEN_A2B2",
+        "INCLEN_A2C1", "INCLEN_A2C2", "INCLEN_A2C3", "INCLEN_A2C4", "INCLEN_A2C5",
+        "INCLEN_A2D", "INCLEN_A3A1", "INCLEN_A3A2", "INCLEN_A3A3",
+        "INCLEN_A3B", "INCLEN_A3C1", "INCLEN_A3C2", "INCLEN_A3D"
+    ];
+
+    let INCLENTable = `<table border="2" style="width: 100%; text-align: left; border-collapse: collapse;">
+        <tr>
+            <th style="padding: 10px; background-color: #94059f; color: white;">Question</th>
+            <th style="padding: 10px; background-color: #94059f; color: white;">Response</th>
+        </tr>`;
+
+    INCLENQueryParams.forEach((param, index) => {
+        let response = urlParams.get(param) || "N/A"; // Fetch response from URL
+        INCLENTable += `
+        <tr>
+            <td style="padding: 8px; border: 1px solid #ccc;">${INCLENQuestions[index]}</td>
+            <td style="padding: 8px; border: 1px solid #ccc; color: #94059f;">${response}</td>
+        </tr>`;
+    });
+
+    INCLENTable += `</table>`;
+
+    queryContainer.innerHTML = INCLENTable;
+}
+
+    // Function to check and hide INCLEN section if needed
+    function handleINCLENVisibility() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const INCLENValue = urlParams.get("INCLEN");
+
+        if (INCLENValue === "Negative") {
+            document.getElementById("INCLEN").style.display = "None"; // Hide the INCLEN section
+        }
+    }
+
+    // Update on page load
+    window.onload = () => {
             handleCARSVisibility();
             displayCARSResponses();
             displayISAAResponses();
+            displayINCLENResponses();
             createCARSChart(); // Call the function to generate the bar chart
 
             // Populate the table
@@ -1063,6 +1284,7 @@ The results include a severity classification indicator, which helps determine w
             const isaaInterpretation = urlParams.get("isaaInterpretation") || 0;
             document.getElementById("CARSScorecell").innerHTML = CARSscore;
             document.getElementById("CARSpatientNamecell").innerHTML = patientName;
+            document.getElementById("INCLENpatientNamecell").innerHTML = patientName;
             document.getElementById("CARSinterpretation").innerHTML = carsInterpretation;
             document.getElementById("ISAAinterpretation").innerHTML = isaaInterpretation;
             document.getElementById('pageheadlinedateCARS').innerHTML = currentDate;
@@ -1072,23 +1294,29 @@ The results include a severity classification indicator, which helps determine w
 
             handleMChatVisibility();
             handleISAAVisibility();
+            handleINCLENVisibility();
             displayMChatResponses();
             displayData();
             
             // Extract data from URL
             const mchatScore = urlParams.get("MCHATscore") || "N/A";
+            const INCLENscore = urlParams.get("INCLENscore") || "N/A";
             const chronologicalAge = urlParams.get("Age") || "N/A";
             // Populate the table
             console.log(patientName);
             document.getElementById("patientNamecell").innerHTML = patientName;
             document.getElementById("isaapatientNamecell").innerHTML = patientName;
             document.getElementById("mchatScorecell").innerHTML = mchatScore;
+            document.getElementById("INCLENScorecell").innerHTML = INCLENscore;
             document.getElementById("chronologicalAgecell").innerHTML = chronologicalAge + " Years";
+            document.getElementById("INCLENchronologicalAgecell").innerHTML = chronologicalAge + " Years";
             const MCHATscore = formatToOneDecimal(urlParams.get("MCHATscore") || 0);
             const classification = urlParams.get("dq") || "N/A";
             const formattedClassification = isNaN(classification) ? classification : formatToOneDecimal(classification);
             document.getElementById('pageheadlinedatemchat').innerHTML = currentDate;
+            document.getElementById('pageheadlinedateINCLEN').innerHTML = currentDate;
             document.getElementById('MCHATscore').innerHTML = MCHATscore;
+            document.getElementById('INCLENscore').innerHTML = INCLENscore;
             // document.getElementById('classificationmessage').innerHTML = formattedClassification;
 
 
@@ -1096,11 +1324,8 @@ The results include a severity classification indicator, which helps determine w
 
         };
 
-    </script>
-
-
-    <!-- ---------------- CARS Report Ends ----------------------- -->
-
+</script>
+    <!-- ---------------- INCLEN Report Ends ----------------------- -->
 </body>
 
 </html>
