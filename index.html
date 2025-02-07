@@ -432,7 +432,7 @@ td, th {
                     data.sensoryAspects,
                     data.cognitiveComponent,
                 ];
-
+                console.log("cognitive = "+data.cognitiveComponent);
                 const ctx = document.getElementById("barChart").getContext("2d");
                 new Chart(ctx, {
                     type: "bar",
@@ -1082,7 +1082,7 @@ The results include a severity classification indicator, which helps determine w
             <BR>  
 
 
-            <span id="INCLENscore" style="font-size: 35px; color: #007bff;"></span>
+            INCLEN Score = <span id="INCLENscore" style="font-size: 35px; color: #007bff;"></span>
         </div>
         <span style="
     color: #9b00ab;
