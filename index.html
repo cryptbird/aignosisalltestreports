@@ -178,7 +178,7 @@ td, th {
 
     <div id="contentToPrint" style="margin: 0; padding: 10">
 
-        <div id="ISAA">
+        <div id="ISAA" style="margin-top: -200px;">
             <div style="display: flex; border-bottom: 5px solid #ab29b9;">
                 <div>
                     <div class="pageheadline" style="border-bottom: 0; font-size: small;" id="pageheadlinedate"> .</div>
@@ -204,7 +204,8 @@ td, th {
                 settings in India.
                 <br />
                 The system provides outputs as <span id="isaaInterpretationmessage"
-                    style="font-size: 15px; color: #007bff;"></span>
+                    style="font-size: 15px; color: #007bff;"></span> and the Aignosis ISAA test output was: <span id='isaascore'
+                    style="font-size: xx-large; color: #007bff;"></span> <br>
                 <br />
             </div>
             <span style="
@@ -257,13 +258,13 @@ td, th {
                     
                     <div id="chartContainer">
                         <!-- <h2>Percentage Chart</h2> -->
-                        <canvas id="barChart"></canvas>
-                        <br><br><br><br><br><br><br>
+                        <canvas id="barChart" style="margin-top: -30px;"></canvas>
+                        <br><br><br><br><br>
                         <div id="queryparametersisaa"></div>
                     </div>
                 </div>
                 
-                <table border="4" style="width: 50%; text-align: center; margin-top: 20px;">
+                <table border="4" style="width: 50%; text-align: center; margin-top: -30px;">
                     <tr>
                         <th>Score Range</th>
                         <th>Classification</th>
@@ -288,14 +289,13 @@ td, th {
 
             </center>
             <div class="scorecontent">
-                The Aignosis ISAA test output was: <span id='isaascore'
-                    style="font-size: xx-large; color: #007bff;"></span> <br>
+                
                 <!-- 0% developmental score - maximally neurotypical score. A score of 100% developmental challenge is achieved if the most neurotypical response is selected for each relevant question in
 		this domain. <br>
 		100%, developmental score = maximally atypical score. A score of 100%. developmental challenge is achieved if the most atypical response is selected for each relevant question in this
 		domain. <br> -->
             </div>
-            <br> <br><br><br><br>
+            <br>
             </div>
         <script>
 
@@ -352,30 +352,48 @@ td, th {
 
         // Function to display M-CHAT responses
         function displayISAAResponses() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const queryContainer = document.getElementById("queryparametersisaa");
+    const urlParams = new URLSearchParams(window.location.search);
+    const queryContainer = document.getElementById("queryparametersisaa");
 
-            let ISAATable = `<table border="2" style="width: 100%; text-align: left; border-collapse: collapse;">
-        <tr>
-            <th style="padding: 10px; background-color: #94059f; color: white;">Question</th>
-            <th style="padding: 10px; background-color: #94059f; color: white;">Response</th>
-        </tr>`;
-            const isaasubques=[9,5,9,7,6,4];
-            for (let i = 1; i <= 6; i++) {
-                for(j=1;j<=isaasubques[i-1];j++){
-                console.log(`ISAA_${i.toString()}.${j.toString()}`);
-                let response = urlParams.get(`ISAA_${i.toString()}.${j.toString()}`) || "N/A"; // Fetch response for ISAA_01, ISAA_02, ..., ISAA_15
-                ISAATable += `
-        <tr>
-            <td style="padding: 8px; border: 1px solid #ccc;">${ISAAQuestions[i - 1][j-1]}</td>
-            <td style="padding: 8px; border: 1px solid #ccc; color: #94059f;">${response}</td>
-        </tr>`;}
-            }
+    // Domain names
+    const domainNames = [
+        "Social Relationship and Reciprocity",
+        "Emotional Responsiveness",
+        "Speech, Language, and Communication",
+        "Behavioral Patterns",
+        "Sensory Aspects",
+        "Cognitive Component"
+    ];
 
-            ISAATable += `</table>`;
+    // Number of questions in each domain
+    const isaasubques = [9, 5, 9, 7, 6, 4];
 
-            queryContainer.innerHTML = ISAATable;
+    let ISAATables = ""; // Store all tables
+
+    for (let i = 1; i <= 6; i++) {
+        ISAATables += `
+            <h3 style="color: #94059f; font-family: Arial, sans-serif;">${domainNames[i - 1]}</h3>
+            <table border="2" style="width: 100%; text-align: left; border-collapse: collapse; margin-bottom: 20px;">
+                <tr>
+                    <th style="padding: 10px; background-color: #94059f; color: white;">Question</th>
+                    <th style="padding: 10px; background-color: #94059f; color: white;">Response</th>
+                </tr>`;
+
+        for (let j = 1; j <= isaasubques[i - 1]; j++) {
+            let response = urlParams.get(`ISAA_${i}.${j}`) || "N/A"; // Fetch response for each question
+            ISAATables += `
+                <tr>
+                    <td style="padding: 8px; border: 1px solid #ccc;">${ISAAQuestions[i - 1][j - 1]}</td>
+                    <td style="padding: 8px; border: 1px solid #ccc; color: #94059f;">${response}</td>
+                </tr>`;
         }
+
+        ISAATables += `</table>`; // Close the table
+    }
+
+    queryContainer.innerHTML = ISAATables; // Insert all tables into the container
+}
+
             // Function to display the data
             function displayData() {
                 const patientData = {
@@ -470,7 +488,23 @@ td, th {
                                 max: 100,
                             },
                         },
+                        plugins: {
+                            datalabels: {
+                                color: "white", // Set text color to white
+                                anchor: "center", // Center the labels inside the bars
+                                align: "center",
+                                font: {
+                                    weight: "bold",
+                                    size: 14, // Adjust font size if necessary
+                                },
+                                formatter: function(value) {
+                                    return value.toFixed(2); // Display values up to 2 decimal places
+                                }
+                            },
+                        },
                     },
+                    plugins: [ChartDataLabels], // Register the plugin
+
                 });
             }
 
@@ -582,7 +616,7 @@ td, th {
     });
 </script>
         <!-- -------------------ISAA REPORT CONTENT ENDS------------------- -->
-        <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+        
 
         <!-- <div class="pagebreak"></div> -->
         <!-- -------------------mchat REPORT CONTENT STARTS ----------------- -->
@@ -799,7 +833,7 @@ td, th {
     <!-- ---------------- CARS Report Starts --------------------- -->
 
     <div id="CARS">
-        <br><br>
+        
         <div style="display: flex; border-bottom: 5px solid #ab29b9;">
             <div>
                 <div class="pageheadline" style="border-bottom: 0; font-size: small;" id="pageheadlinedateCARS"> .
@@ -848,7 +882,7 @@ The results include a severity classification indicator, which helps determine w
     ">
             Summary of Domain Specific Challenges
         </span>
-
+        <br><br>
         <!-- Patient Information Table -->
         <center>
             <table border="2" style="width: 50%; text-align: center; margin-top: 20px; border-collapse: collapse;">
@@ -930,10 +964,11 @@ The results include a severity classification indicator, which helps determine w
     ];
 
     const ctx = document.getElementById("CARSChart").getContext("2d");
+
     new Chart(ctx, {
         type: "bar",
         data: {
-            labels: CARSQuestions, // Questions are still X-axis labels
+            labels: CARSQuestions, // Display labels on the Y-axis
             datasets: [{
                 label: "CARS Scores",
                 data: CARSscores,
@@ -942,40 +977,37 @@ The results include a severity classification indicator, which helps determine w
             }]
         },
         options: {
+            indexAxis: "y", // Display the chart horizontally
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-                legend: { display: false },
+                legend: { display: false }, // Hide legend
                 tooltip: { enabled: true },
                 datalabels: {
-                    color: "white", // Ensure text is visible inside bars
+                    color: "white", // White text inside bars
                     anchor: "center",
                     align: "center",
-                    font: { size: 10 },
-                    rotation: -90, // Rotate text vertically inside bars
-                    formatter: (_, context) => {
-                        return CARSQuestions[context.dataIndex]; // Display question instead of value
+                    font: { size: 12, weight: "bold" },
+                    formatter: function(value) {
+                        return value.toFixed(2); // Show values with 2 decimal places
                     }
                 }
             },
             scales: {
-                y: {
+                x: {
                     beginAtZero: true,
-                    max: 4,
+                    max: 4, // CARS scores range from 0 to 4
                     title: {
                         display: true,
-                        text: "Scores (0 - 4)",
+                        text: "Scores (0 - 4)", // Label for X-axis
                         font: { size: 14 }
                     }
                 },
-                x: {
+                y: {
                     title: {
                         display: true,
-                        text: "CARS Questions",
+                        text: "CARS Questions", // Label for Y-axis
                         font: { size: 14 }
-                    },
-                    ticks: {
-                        display: false // Hide default X-axis labels
                     }
                 }
             }
@@ -1051,7 +1083,7 @@ The results include a severity classification indicator, which helps determine w
 
 
     <!-- ---------------- CARS Report Ends ----------------------- -->
-    <br><br>
+    <br>
     <!-- ---------------- INCLEN Report Starts ----------------------- -->
 
     <div id="INCLEN">
@@ -1093,7 +1125,7 @@ The results include a severity classification indicator, which helps determine w
     ">
             Detailed INCLEN Report
         </span>
-        <br /> <br>
+        <br /> 
         <span style="
     font-family: 'Times New Roman', Times, serif;
     font-size: 12px;
@@ -1125,7 +1157,7 @@ The results include a severity classification indicator, which helps determine w
             </table>
         </center>
          <br>
-        <div class="scorecontent">
+        <div class="scorecontent" style="margin-top: -5px;">
             <p>The INCLEN test output provides an assessment of the child's developmental patterns based on their responses to key screening questions.</p>
 
 <p>
@@ -1142,7 +1174,6 @@ The results include a severity classification indicator, which helps determine w
 
         </div>
         <br><br><br>
-
 
         <!-- <span style="font-family: 'Times New Roman', Times, serif; margin-left: 25px;">
         Lower scores indicate high Challenges
@@ -1164,7 +1195,7 @@ The results include a severity classification indicator, which helps determine w
 
 
 
-        <br> <br><br><br><br> <br>
+        
     </div>
 </div>
 <script>
@@ -1243,7 +1274,7 @@ The results include a severity classification indicator, which helps determine w
         </tr>`;
 
     INCLENQueryParams.forEach((param, index) => {
-        let response = urlParams.get(param) || "N/A"; // Fetch response from URL
+        let response = urlParams.get(param) || "_"; // Fetch response from URL
         INCLENTable += `
         <tr>
             <td style="padding: 8px; border: 1px solid #ccc;">${INCLENQuestions[index]}</td>
