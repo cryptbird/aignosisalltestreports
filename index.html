@@ -21,6 +21,22 @@
             /* padding: 0; */
         }
 
+        #ISAA {
+            page-break-after: always !important;
+            break-after: always !important;
+        }
+        #MCHAT {
+            page-break-after: always !important;
+            break-after: always !important;
+        }
+        #CARS {
+            page-break-after: always !important;
+            break-after: always !important;
+        }
+        #INCLEN {
+            page-break-after: always !important;
+            break-after: always !important;
+        }
         .container {
             width: 100%;
             max-width: 7.5in;
@@ -30,6 +46,8 @@
             /* Prevent content overflow */
             word-wrap: break-word;
             /* Wrap long text */
+            page-break-inside: avoid; /* Prevent content from breaking between pages */
+            break-inside: avoid; /* Ensures the whole element moves to the next page */
         }
 
         .data-field {
@@ -61,6 +79,8 @@
             /* Match container width */
             overflow-x: auto;
             /* Allow scrolling for wide charts */
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
         }
 
         #chartContainermchat {
@@ -69,6 +89,8 @@
             /* Match container width */
             overflow-x: auto;
             /* Allow scrolling for wide charts */
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
         }
 
         .pageheadline {
@@ -96,6 +118,8 @@
             font-family: "Times New Roman", Times, serif;
             font-weight: 600;
             line-height: 25px;
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
         }
 
         .scorecontent {
@@ -105,6 +129,8 @@
             font-family: "Times New Roman", Times, serif;
             font-weight: 600;
             line-height: 15px;
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
         }
 
         #contentToPrint {
@@ -119,26 +145,18 @@
             /* Avoid cutting content in between */
         }
         /* Prevent table rows from breaking across pages */
-table {
-    page-break-inside: 60px;
-    width: 100%;
-    border-collapse: collapse;
-}
+       
 
-tr {
-    page-break-inside: avoid;
-    page-break-after: auto;
-}
-
-td, th {
-    padding: 8px;
-    border: 1px solid #ccc;
-    word-wrap: break-word;
-}
+        /* Ensure new sections start on a fresh page */
         .pagebreak {
-            page-break-before: always;
-            /* Force a new page */
+            page-break-before: always !important;
         }
+
+        /* Ensure chart container and tables move fully to the next page if needed */
+        /* #chartContainer, #chartContainermchat, .reportcontent, .scorecontent {
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+        } */
 
         /* Desktop mode for mobile */
         @media only screen and (max-width: 767px) {
@@ -533,87 +551,124 @@ td, th {
             //             .from(element)
             //             .save();
             //     });
+            // function enforcePageBreaks() {
+            //     const isaaDiv = document.getElementById("ISAA");
+            //     if (isaaDiv) {
+            //         const pageBreakDiv = document.createElement("div");
+            //         pageBreakDiv.style.pageBreakAfter = "always"; // Force next section to a new page
+            //         isaaDiv.parentNode.insertBefore(pageBreakDiv, isaaDiv.nextSibling);
+            //     }
+            //     const MCHATDiv = document.getElementById("MCHAT");
+            //     if (MCHATDiv) {
+            //         const pageBreakDiv = document.createElement("div");
+            //         pageBreakDiv.style.pageBreakAfter = "always"; // Force next section to a new page
+            //         MCHATDiv.parentNode.insertBefore(pageBreakDiv, MCHATDiv.nextSibling);
+            //     }
+            //     const CARSDiv = document.getElementById("CARS");
+            //     if (CARSDiv) {
+            //         const pageBreakDiv = document.createElement("div");
+            //         pageBreakDiv.style.pageBreakAfter = "always"; // Force next section to a new page
+            //         CARSDiv.parentNode.insertBefore(pageBreakDiv, CARSDiv.nextSibling);
+            //     }
+            //     const INCLENDiv = document.getElementById("INCLEN");
+            //     if (INCLENDiv) {
+            //         const pageBreakDiv = document.createElement("div");
+            //         pageBreakDiv.style.pageBreakAfter = "always"; // Force next section to a new page
+            //         INCLENDiv.parentNode.insertBefore(pageBreakDiv, INCLENDiv.nextSibling);
+            //     }
+            // }
 
-            document.getElementById("printBtn").addEventListener("click", async function () {
-        const element = document.getElementById("contentToPrint");
+// Call before generating the PDF
+document.getElementById("printBtn").addEventListener("click", async function () {
+    const element = document.getElementById("contentToPrint");
 
-        if (!element) {
-            console.error("Error: #contentToPrint not found!");
-            alert("Error: Unable to find content to print.");
-            return;
-        }
+    // Check if ISAA section is hidden
+    const isaaSection = document.getElementById("ISAA");
+    let removePages = false;
+    if (isaaSection && (isaaSection.style.display === "none" || isaaSection.style.visibility === "hidden")) {
+        isaaSection.remove();
+        removePages = true;
+        console.log("ISAA Section is hidden. Pages 3-5 will be removed.");
+    }
 
-        const options = {
-            margin: [10, 10, 10, 10],
-            filename: "new_patient_data.pdf",
-            image: { type: "jpeg", quality: 0.98 },
-            html2canvas: { scale: 2 },
-            jsPDF: { unit: "in", format: "letter", orientation: "portrait" }
-        };
+    if (!element) {
+        console.error("Error: #contentToPrint not found!");
+        alert("Error: Unable to find content to print.");
+        return;
+    }
 
-        try {
-            // Ensure content is fully loaded before conversion
-            await new Promise(resolve => setTimeout(resolve, 500));
+    const options = {
+        margin: [10, 10, 10, 10],
+        filename: "new_patient_data.pdf",
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: "in", format: "letter", orientation: "portrait" }
+    };
 
-            // Generate new PDF as blob
-            console.log("Generating new PDF from content...");
-            const newPdfBlob = await html2pdf().from(element).toPdf().output('blob');
-            const newPdfBytes = await newPdfBlob.arrayBuffer();
-            console.log("New PDF generated successfully.");
+    try {
+        await new Promise(resolve => setTimeout(resolve, 500));
 
-            // Fetch existing PDF (PDF1.pdf)
-            console.log("Fetching existing PDF1.pdf...");
-            const existingPdfResponse = await fetch('PDF1.pdf');
-            if (!existingPdfResponse.ok) throw new Error("Failed to load PDF1.pdf");
-            const existingPdfBytes = await existingPdfResponse.arrayBuffer();
-            console.log("Existing PDF loaded successfully.");
+        console.log("Generating new PDF from content...");
+        const newPdfBlob = await html2pdf().from(element).toPdf().output('blob');
+        const newPdfBytes = await newPdfBlob.arrayBuffer();
+        console.log("New PDF generated successfully.");
 
-            // Load PDFs using PDF-Lib
-            const { PDFDocument } = window.PDFLib;
-            const existingPdfDoc = await PDFDocument.load(existingPdfBytes);
-            const newPdfDoc = await PDFDocument.load(newPdfBytes);
-            const mergedPdf = await PDFDocument.create();
+        console.log("Fetching existing PDF1.pdf...");
+        const existingPdfResponse = await fetch('PDF1.pdf');
+        if (!existingPdfResponse.ok) throw new Error("Failed to load PDF1.pdf");
+        const existingPdfBytes = await existingPdfResponse.arrayBuffer();
+        console.log("Existing PDF loaded successfully.");
 
-            // Get the first page to determine the size
-            const existingPages = await existingPdfDoc.copyPages(existingPdfDoc, [0]);
-            if (existingPages.length === 0) throw new Error("No pages found in PDF1.pdf");
+        // Load PDFs using PDF-Lib
+        const { PDFDocument } = window.PDFLib;
+        const existingPdfDoc = await PDFDocument.load(existingPdfBytes);
+        const newPdfDoc = await PDFDocument.load(newPdfBytes);
+        const mergedPdf = await PDFDocument.create();
 
-            const firstExistingPage = existingPages[0];
-            const width = firstExistingPage?.getWidth() || 612;  // Default to A4 width if undefined
-            const height = firstExistingPage?.getHeight() || 792; // Default to A4 height if undefined
-            console.log(`Using dimensions: Width=${width}, Height=${height}`);
+        // Function to copy selected pages
+        async function copySelectedPages(sourceDoc, targetDoc, excludePages = []) {
+            const totalPages = sourceDoc.getPageCount();
+            const pagesToCopy = [];
 
-            async function addPages(sourceDoc, targetDoc) {
-                const pages = await targetDoc.copyPages(sourceDoc, sourceDoc.getPageIndices());
-                pages.forEach(page => {
-                    page.setWidth(width);
-                    page.setHeight(height);
-                    targetDoc.addPage(page);
-                });
+            for (let i = 0; i < totalPages; i++) {
+                if (!excludePages.includes(i)) {
+                    pagesToCopy.push(i);
+                } else {
+                    console.log(`Skipping Page ${i + 1} due to ISAA being hidden.`);
+                }
             }
 
-            // Merge PDFs while maintaining page sizes
-            await addPages(existingPdfDoc, mergedPdf);
-            await addPages(newPdfDoc, mergedPdf);
-
-            // Save merged PDF
-            console.log("Saving merged PDF...");
-            const mergedPdfBytes = await mergedPdf.save();
-            const blob = new Blob([mergedPdfBytes], { type: "application/pdf" });
-
-            // Trigger download
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            const urlParams = new URLSearchParams(window.location.search);
-            const patientName = urlParams.get("Name") || "N/A";
-            link.download = `${patientName}_Report.pdf`;
-            link.click();
-            console.log("Merged PDF downloaded successfully.");
-        } catch (error) {
-            console.error("Error generating PDF:", error);
-            alert("Failed to generate PDF. See console for details.");
+            const copiedPages = await targetDoc.copyPages(sourceDoc, pagesToCopy);
+            copiedPages.forEach((page) => targetDoc.addPage(page));
         }
-    });
+
+        // Merge PDFs, excluding pages 3, 4, 5 if ISAA is hidden
+        if (removePages) {
+            await copySelectedPages(existingPdfDoc, mergedPdf, [2, 3, 4]); // Remove pages 3, 4, 5
+        } else {
+            await copySelectedPages(existingPdfDoc, mergedPdf);
+        }
+
+        await copySelectedPages(newPdfDoc, mergedPdf);
+
+        console.log("Saving merged PDF...");
+        const mergedPdfBytes = await mergedPdf.save();
+        const blob = new Blob([mergedPdfBytes], { type: "application/pdf" });
+
+        // Trigger download
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        const urlParams = new URLSearchParams(window.location.search);
+        const patientName = urlParams.get("Name") || "N/A";
+        link.download = `${patientName}_Report.pdf`;
+        link.click();
+        console.log("Merged PDF downloaded successfully.");
+    } catch (error) {
+        console.error("Error generating PDF:", error);
+        alert("Failed to generate PDF. See console for details.");
+    }
+});
+
 </script>
         <!-- -------------------ISAA REPORT CONTENT ENDS------------------- -->
         
@@ -621,8 +676,8 @@ td, th {
         <!-- <div class="pagebreak"></div> -->
         <!-- -------------------mchat REPORT CONTENT STARTS ----------------- -->
         <div id="MCHAT">
-            <br><br><br><br><br><br><br><br>
-            <div style="display: flex; border-bottom: 5px solid #ab29b9;">
+            
+            <div style="display: flex; border-bottom: 5px solid #ab29b9; margin-top: 10px;">
                 <div>
                     <div class="pageheadline" style="border-bottom: 0; font-size: small;" id="pageheadlinedatemchat"> .
                     </div>
@@ -736,7 +791,7 @@ td, th {
                     <div id="patientData" hidden>
                         <!-- Data will be displayed here -->
                     </div>
-
+                    <br><br><br>
                     <div id="chartContainermchat">
                         <!-- Display query parameters instead of the bar chart -->
                         <!-- <h2>Query Parameters</h2> -->
@@ -747,7 +802,7 @@ td, th {
 
 
 
-            <br> <br><br><br><br> <br>
+            <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
         </div>
     
     <script>
@@ -792,7 +847,7 @@ td, th {
                 <th style="padding: 10px; background-color: #94059f; color: white;">Response</th>
             </tr>`;
 
-            for (let i = 1; i <= 23; i++) {
+            for (let i = 1; i <= 20; i++) {
                 let response = urlParams.get(`MCHAT_${i.toString().padStart(2, '0')}`) || "N/A"; // Fetch response for MCHAT_01, MCHAT_02, ..., MCHAT_23
                 mchatTable += `
             <tr>
@@ -829,12 +884,11 @@ td, th {
 
     </script>
     <!-- ---------------- M-CHAT Report Ends --------------------- -->
-
     <!-- ---------------- CARS Report Starts --------------------- -->
 
-    <div id="CARS">
+    <div id="CARS" >
         
-        <div style="display: flex; border-bottom: 5px solid #ab29b9;">
+        <div style="display: flex; border-bottom: 5px solid #ab29b9; margin-top: 10px;">
             <div>
                 <div class="pageheadline" style="border-bottom: 0; font-size: small;" id="pageheadlinedateCARS"> .
                 </div>
@@ -1087,7 +1141,7 @@ The results include a severity classification indicator, which helps determine w
     <!-- ---------------- INCLEN Report Starts ----------------------- -->
 
     <div id="INCLEN">
-        <div style="display: flex; border-bottom: 5px solid #ab29b9;">
+        <div style="display: flex; border-bottom: 5px solid #ab29b9; margin-top: 10px;">
             <div>
                 <div class="pageheadline" style="border-bottom: 0; font-size: small;" id="pageheadlinedateINCLEN"> .
                 </div>
