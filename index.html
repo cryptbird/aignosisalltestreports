@@ -541,11 +541,11 @@ document.getElementById("printBtn").addEventListener("click", async function () 
     const isCARSSelected = document.getElementById("CARS_checkbox").checked;
     const isINCLENSelected = document.getElementById("INCLEN_checkbox").checked;
 
-    // Hide unselected sections
-    document.getElementById("ISAA").style.display = isISAASelected ? "block" : "none";
-    document.getElementById("MCHAT").style.display = isMCHATSelected ? "block" : "none";
-    document.getElementById("CARS").style.display = isCARSSelected ? "block" : "none";
-    document.getElementById("INCLEN").style.display = isINCLENSelected ? "block" : "none";
+   // Remove unchecked sections from the cloned content
+   if (!isISAASelected) clonedElement.querySelector("#ISAA")?.remove();
+    if (!isMCHATSelected) clonedElement.querySelector("#MCHAT")?.remove();
+    if (!isCARSSelected) clonedElement.querySelector("#CARS")?.remove();
+    if (!isINCLENSelected) clonedElement.querySelector("#INCLEN")?.remove();
     if (!isISAASelected && !isMCHATSelected && !isCARSSelected && !isINCLENSelected) {
         alert("Please select at least one section to print.");
         return;
