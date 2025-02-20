@@ -537,9 +537,9 @@
 document.getElementById("printBtn").addEventListener("click", async function () {
     const element = document.getElementById("contentToPrint");
     const isISAASelected = document.getElementById("ISAA_checkbox").checked;
-    // const isMCHATSelected = document.getElementById("MCHAT_checkbox").checked;
-    // const isCARSSelected = document.getElementById("CARS_checkbox").checked;
-    // const isINCLENSelected = document.getElementById("INCLEN_checkbox").checked;
+     const isMCHATSelected = document.getElementById("MCHAT_checkbox").checked;
+     const isCARSSelected = document.getElementById("CARS_checkbox").checked;
+     const isINCLENSelected = document.getElementById("INCLEN_checkbox").checked;
 
     // Hide unselected sections
     document.getElementById("ISAA").style.display = isISAASelected ? "block" : "none";
