@@ -17,6 +17,7 @@
             margin-top: 0;
             padding: 180px;
             margin: 10px 0 !important;
+            text-align: justify;
             /* Ensure margins are applied on all pages */
             /* padding: 0; */
         }
@@ -191,6 +192,10 @@
 
     <!-- -------------------ISAA REPORT CONTENT STARTS------------------- -->
     <center>
+        <label><input type="checkbox" id="ISAA_checkbox" checked> ISAA</label>
+        <label><input type="checkbox" id="MCHAT_checkbox" checked> MCHAT</label>
+        <label><input type="checkbox" id="CARS_checkbox" checked> CARS</label>
+        <label><input type="checkbox" id="INCLEN_checkbox" checked> INCLEN</label>
         <button id="printBtn">Print PDF</button>
     </center>
 
@@ -526,70 +531,33 @@
                 });
             }
 
-            // Call the function to display data once the page loads
-            // window.onload = displayData;
-
-            // Add functionality to the Print PDF button
-            // document
-            //     .getElementById("printBtn")
-            //     .addEventListener("click", function () {
-            //         const element = document.getElementById("contentToPrint");
-            //         const options = {
-            //             margin: [0, 0, 0, 0], // No margins
-            //             filename: "patient_data.pdf",
-            //             image: { type: "jpeg", quality: 0.98 },
-            //             html2canvas: {
-            //                 scale: 2, // Higher scale for better quality
-            //                 width: element.offsetWidth, // Use container width
-            //             },
-            //             jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
-            //         };
-            //         html2pdf()
-            //             .set({
-            //                 html2canvas: { scrollX: 0, scrollY: 0 },
-            //             })
-            //             .from(element)
-            //             .save();
-            //     });
-            // function enforcePageBreaks() {
-            //     const isaaDiv = document.getElementById("ISAA");
-            //     if (isaaDiv) {
-            //         const pageBreakDiv = document.createElement("div");
-            //         pageBreakDiv.style.pageBreakAfter = "always"; // Force next section to a new page
-            //         isaaDiv.parentNode.insertBefore(pageBreakDiv, isaaDiv.nextSibling);
-            //     }
-            //     const MCHATDiv = document.getElementById("MCHAT");
-            //     if (MCHATDiv) {
-            //         const pageBreakDiv = document.createElement("div");
-            //         pageBreakDiv.style.pageBreakAfter = "always"; // Force next section to a new page
-            //         MCHATDiv.parentNode.insertBefore(pageBreakDiv, MCHATDiv.nextSibling);
-            //     }
-            //     const CARSDiv = document.getElementById("CARS");
-            //     if (CARSDiv) {
-            //         const pageBreakDiv = document.createElement("div");
-            //         pageBreakDiv.style.pageBreakAfter = "always"; // Force next section to a new page
-            //         CARSDiv.parentNode.insertBefore(pageBreakDiv, CARSDiv.nextSibling);
-            //     }
-            //     const INCLENDiv = document.getElementById("INCLEN");
-            //     if (INCLENDiv) {
-            //         const pageBreakDiv = document.createElement("div");
-            //         pageBreakDiv.style.pageBreakAfter = "always"; // Force next section to a new page
-            //         INCLENDiv.parentNode.insertBefore(pageBreakDiv, INCLENDiv.nextSibling);
-            //     }
-            // }
+           
 
 // Call before generating the PDF
 document.getElementById("printBtn").addEventListener("click", async function () {
     const element = document.getElementById("contentToPrint");
+    const isISAASelected = document.getElementById("ISAA_checkbox").checked;
+    const isMCHATSelected = document.getElementById("MCHAT_checkbox").checked;
+    const isCARSSelected = document.getElementById("CARS_checkbox").checked;
+    const isINCLENSelected = document.getElementById("INCLEN_checkbox").checked;
 
+    // Hide unselected sections
+    document.getElementById("ISAA").style.display = isISAASelected ? "block" : "none";
+    document.getElementById("MCHAT").style.display = isMCHATSelected ? "block" : "none";
+    document.getElementById("CARS").style.display = isCARSSelected ? "block" : "none";
+    document.getElementById("INCLEN").style.display = isINCLENSelected ? "block" : "none";
+    if (!isISAASelected && !isMCHATSelected && !isCARSSelected && !isINCLENSelected) {
+        alert("Please select at least one section to print.");
+        return;
+    }
     // Check if ISAA section is hidden
     const isaaSection = document.getElementById("ISAA");
     let removePages = false;
-    if (isaaSection && (isaaSection.style.display === "none" || isaaSection.style.visibility === "hidden")) {
-        isaaSection.remove();
-        removePages = true;
-        console.log("ISAA Section is hidden. Pages 3-5 will be removed.");
-    }
+    // if (isaaSection && (isaaSection.style.display === "none" || isaaSection.style.visibility === "hidden")) {
+    //     isaaSection.remove();
+    //     removePages = true;
+    //     console.log("ISAA Section is hidden. Pages 3-5 will be removed.");
+    // }
 
     if (!element) {
         console.error("Error: #contentToPrint not found!");
@@ -710,7 +678,7 @@ document.getElementById("printBtn").addEventListener("click", async function () 
                 typical development, mild concerns requiring follow-up, or significant risk necessitating further
                 evaluation. Early identification through M-CHAT allows for timely interventions, improving long-term
                 developmental outcomes. <BR>
-
+                    <br>
                 <span id="MCHATscore" style="font-size: 35px; color: #007bff;"></span>
             </div>
             <span style="
@@ -795,7 +763,8 @@ document.getElementById("printBtn").addEventListener("click", async function () 
                     <div id="chartContainermchat">
                         <!-- Display query parameters instead of the bar chart -->
                         <!-- <h2>Query Parameters</h2> -->
-                        <div id="queryParameters"></div>
+                        <div id="queryParameters"></div> <br><br><br>
+                        <div id="queryParameters2"></div>
                     </div>
                 </div>
             </center>
@@ -847,7 +816,30 @@ document.getElementById("printBtn").addEventListener("click", async function () 
                 <th style="padding: 10px; background-color: #94059f; color: white;">Response</th>
             </tr>`;
 
-            for (let i = 1; i <= 20; i++) {
+            for (let i = 1; i <= 18; i++) {
+                let response = urlParams.get(`MCHAT_${i.toString().padStart(2, '0')}`) || "N/A"; // Fetch response for MCHAT_01, MCHAT_02, ..., MCHAT_23
+                mchatTable += `
+            <tr>
+                <td style="padding: 8px; border: 1px solid #ccc;">${mchatQuestions[i - 1]}</td>
+                <td style="padding: 8px; border: 1px solid #ccc; color: #94059f;">${response}</td>
+            </tr>`;
+            }
+
+            mchatTable += `</table>`;
+
+            queryContainer.innerHTML = mchatTable;
+        }
+        function displayMChatResponses2() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const queryContainer = document.getElementById("queryParameters2");
+
+            let mchatTable = `<table border="2" style="width: 100%; text-align: left; border-collapse: collapse;">
+            <tr>
+                <th style="padding: 10px; background-color: #94059f; color: white;">Question</th>
+                <th style="padding: 10px; background-color: #94059f; color: white;">Response</th>
+            </tr>`;
+
+            for (let i = 19; i <= 20; i++) {
                 let response = urlParams.get(`MCHAT_${i.toString().padStart(2, '0')}`) || "N/A"; // Fetch response for MCHAT_01, MCHAT_02, ..., MCHAT_23
                 mchatTable += `
             <tr>
@@ -1383,10 +1375,12 @@ The results include a severity classification indicator, which helps determine w
             handleISAAVisibility();
             handleINCLENVisibility();
             displayMChatResponses();
+            displayMChatResponses2();
             displayData();
             
             // Extract data from URL
             const mchatScore = urlParams.get("MCHATscore") || "N/A";
+            const MCHATinterpretation = urlParams.get("MCHATinterpretation") || "N/A";
             const INCLENscore = urlParams.get("INCLENscore") || "N/A";
             const chronologicalAge = urlParams.get("Age") || "N/A";
             // Populate the table
@@ -1402,7 +1396,7 @@ The results include a severity classification indicator, which helps determine w
             const formattedClassification = isNaN(classification) ? classification : formatToOneDecimal(classification);
             document.getElementById('pageheadlinedatemchat').innerHTML = currentDate;
             document.getElementById('pageheadlinedateINCLEN').innerHTML = currentDate;
-            document.getElementById('MCHATscore').innerHTML = MCHATscore;
+            document.getElementById('MCHATscore').innerHTML = MCHATscore+" - "+MCHATinterpretation.toString();
             document.getElementById('INCLENscore').innerHTML = INCLENscore;
             // document.getElementById('classificationmessage').innerHTML = formattedClassification;
 
